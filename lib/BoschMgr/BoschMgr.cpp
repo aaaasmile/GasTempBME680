@@ -1,105 +1,60 @@
 #include "BoschMgr.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include "bsec_integration.h"
+#include "bsec.h"
 
-void sleep(uint32_t t_ms)
-{
-    delay(t_ms);
-}
+const uint8_t bsec_config_iaq[] = {
+#include "config/generic_33v_3s_4d/bsec_iaq.txt"
+};
 
-int64_t get_timestamp_us()
-{
-    return (int64_t) millis() * 1000;
-}
+///////////////// bsec
+Bsec iaqSensor;
+String output;
 
-void state_save(const uint8_t *state_buffer, uint32_t length)
+void checkIaqSensorStatus(void)
 {
-    // ...
-    // Save the string some form of non-volatile memory, if possible.
-    // ...
-}
-
-uint32_t state_load(uint8_t *state_buffer, uint32_t n_buffer)
-{
-    // ...
-    // Load a previous library state from non-volatile memory, if available.
-    //
-    // Return zero if loading was unsuccessful or no state was available,
-    // otherwise return length of loaded state string.
-    // ...
-    return 0;
-}
-
-void output_ready(int64_t timestamp, float iaq, uint8_t iaq_accuracy, float temperature, float humidity,
-                  float pressure, float raw_temperature, float raw_humidity, float gas, bsec_library_return_t bsec_status,
-                  float static_iaq, float co2_equivalent, float breath_voc_equivalent)
-{
-    //snprintf(msg, 50, "In Betrieb seit %ld milliseconds", millis());
-    Serial.print("[");
-    Serial.print(timestamp / 1e6);
-    Serial.print("] T: ");
-    Serial.print(temperature);
-    // in Grad
-    Serial.print("| rH: ");
-    Serial.print(humidity);
-    // in %
-    Serial.print("| IAQ: ");
-    Serial.print(iaq);
-    Serial.print(" (");
-    Serial.print(iaq_accuracy);
-    Serial.print("| Static IAQ: ");
-    Serial.print(static_iaq);
-    Serial.print("| CO2e: ");
-    Serial.print(co2_equivalent);
-    Serial.print("| bVOC: ");
-    Serial.println(breath_voc_equivalent);
-}
-
-int8_t bus_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint16_t data_len)
-{
-    Wire.beginTransmission(dev_addr);
-    Wire.write(reg_addr);    /* Set register address to start writing to */
- 
-    /* Write the data */
-    for (int index = 0; index < data_len; index++) {
-        Wire.write(reg_data_ptr[index]);
-    }
- 
-    return (int8_t)Wire.endTransmission();
-}
-
-int8_t bus_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint16_t data_len)
-{
-    int8_t comResult = 0;
-    Wire.beginTransmission(dev_addr);
-    Wire.write(reg_addr);                    /* Set register address to start reading from */
-    comResult = Wire.endTransmission();
- 
-    delayMicroseconds(150);                 /* Precautionary response delay */
-    Wire.requestFrom(dev_addr, (uint8_t)data_len);    /* Request data */
- 
-    int index = 0;
-    while (Wire.available())  /* The slave device may send less than requested (burst read) */
+    if (iaqSensor.status != BSEC_OK)
     {
-        reg_data_ptr[index] = Wire.read();
-        index++;
+        if (iaqSensor.status < BSEC_OK)
+        {
+            output = "BSEC error code : " + String(iaqSensor.status);
+            Serial.println(output);
+            for (;;)
+                errLeds(); /* Halt in case of failure */
+        }
+        else
+        {
+            output = "BSEC warning code : " + String(iaqSensor.status);
+            Serial.println(output);
+        }
     }
- 
-    return comResult;
+
+    if (iaqSensor.bme680Status != BME680_OK)
+    {
+        if (iaqSensor.bme680Status < BME680_OK)
+        {
+            output = "BME680 error code : " + String(iaqSensor.bme680Status);
+            Serial.println(output);
+            for (;;)
+                errLeds(); /* Halt in case of failure */
+        }
+        else
+        {
+            output = "BME680 warning code : " + String(iaqSensor.bme680Status);
+            Serial.println(output);
+        }
+    }
+    iaqSensor.status = BSEC_OK;
 }
 
-uint32_t config_load(uint8_t *config_buffer, uint32_t n_buffer)
+void errLeds(void)
 {
-    // ...
-    // Load a library config from non-volatile memory, if available.
-    //
-    // Return zero if loading was unsuccessful or no config was available, 
-    // otherwise return length of loaded config string.
-    // ...
-    return 0;
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(100);
 }
-
 
 BoschMgr::BoschMgr()
 {
@@ -107,24 +62,55 @@ BoschMgr::BoschMgr()
 
 void BoschMgr::Setup()
 {
-    /* Call to the function which initializes the BSEC library 
-     * Switch on low-power mode and provide no temperature offset */
-    return_values_init ret;
-    ret = bsec_iot_init(BSEC_SAMPLE_RATE_LP, 5.0f, bus_write, bus_read, sleep, state_load, config_load);
-    if (ret.bme680_status)
-    {
-        /* Could not intialize BME680 */
-        Serial.println("Error while initializing BME680");
-        return;
-    }
-    else if (ret.bsec_status)
-    {
-        /* Could not intialize BSEC library */
-        Serial.println("Error while initializing BSEC library");
-        return;
-    }
+    Wire.begin();
 
-    /* Call to endless loop function which reads and processes data based on sensor settings */
-    /* State is saved every 10.000 samples, which means every 10.000 * 3 secs = 500 minutes  */
-    bsec_iot_loop(sleep, get_timestamp_us, output_ready, state_save, 10000);
+    iaqSensor.begin(BME680_I2C_ADDR_PRIMARY, Wire);
+    output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
+    Serial.println(output);
+    checkIaqSensorStatus();
+
+    iaqSensor.setConfig(bsec_config_iaq);
+    checkIaqSensorStatus();
+
+    //loadState();
+
+    bsec_virtual_sensor_t sensorList[7] = {
+        BSEC_OUTPUT_RAW_TEMPERATURE,
+        BSEC_OUTPUT_RAW_PRESSURE,
+        BSEC_OUTPUT_RAW_HUMIDITY,
+        BSEC_OUTPUT_RAW_GAS,
+        BSEC_OUTPUT_IAQ,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+        BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+    };
+
+    iaqSensor.updateSubscription(sensorList, 7, BSEC_SAMPLE_RATE_LP);
+    checkIaqSensorStatus();
+
+    // Print the header
+    output = "Timestamp [ms], raw temperature [°C], pressure [hPa], raw relative humidity [%], gas [Ohm], IAQ, IAQ accuracy, temperature [°C], relative humidity [%]";
+    Serial.println(output);
+}
+
+void BoschMgr::Loop()
+{
+    unsigned long time_trigger = millis();
+    if (iaqSensor.run())
+    { // If new data is available
+        output = String(time_trigger);
+        output += ", " + String(iaqSensor.rawTemperature);
+        output += ", " + String(iaqSensor.pressure);
+        output += ", " + String(iaqSensor.rawHumidity);
+        output += ", " + String(iaqSensor.gasResistance);
+        output += ", " + String(iaqSensor.iaq);
+        output += ", " + String(iaqSensor.iaqAccuracy);
+        output += ", " + String(iaqSensor.temperature);
+        output += ", " + String(iaqSensor.humidity);
+        Serial.println(output);
+        //updateState();
+    }
+    else
+    {
+        checkIaqSensorStatus();
+    }
 }

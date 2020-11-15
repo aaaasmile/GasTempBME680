@@ -6,6 +6,7 @@ class BoschMgr
 public:
     BoschMgr();
     void Setup();
+    void Loop();
 
 private:
 };
