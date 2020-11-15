@@ -1,3 +1,5 @@
+#ifndef MYLIGHT_H
+#define MYLIGHT_H
 
 class MyLight
 {
@@ -18,3 +20,5 @@ private:
     bool _greenState;
     bool _stateOn;
 };
+
+#endif
