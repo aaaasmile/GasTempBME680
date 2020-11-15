@@ -1,0 +1,13 @@
+== GasTempBME680
+Dopo aver preparato la scheda con il sensore e aver provato con aurduino ide che l'esempio funzioni,
+voglio avere un progetto con platform io.
+In Visual Code creo un nuovo progetto usando la mia directory custom D:\Arduino\PlatformIO e mettendo
+la piattaforma nodemcu 1.0. 
+L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema.
+Il primo problema che ho con il codice preso di pari pari da arduino ide è che le librerie non 
+vengono riconosciute.
+Vanno installate con PlatformIO. Come?
+Sono andato in PIHome alla voce Libraries. Qui ho cercato 
+Adafruit Unified Sensor 
+una volta trovata, ho aggiunto al progetto unsando il bottone "Add to project".
+Sembra funzionare in quanto l'errore successivo è correlato alla libreria BME680.
