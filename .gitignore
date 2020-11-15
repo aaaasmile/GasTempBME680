@@ -3,3 +3,11 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+external_lib/libalgobsec.a
+lib/BoschMgr/bsec.cpp
+lib/BoschMgr/bsec.h
+lib/BoschMgr/bme680/bme680_defs.h
+lib/BoschMgr/bme680/bme680.c
+lib/BoschMgr/bme680/bme680.h
+lib/BoschMgr/inc/bsec_datatypes.h
+lib/BoschMgr/inc/bsec_interface.h
