@@ -3,10 +3,10 @@
 #include <SPI.h>
 
 #include <MyLight.h>
-#include <MyAdaBme.h>
+#include <BoschMgr.h>
 
 MyLight *myLight;
-MyAdaBme *myAdaBme;
+BoschMgr *boschMgr;
 
 int loopCount = 0;
 
@@ -21,13 +21,13 @@ void setup()
     ;
   Serial.println(F("My BME680 test"));
 
-  myAdaBme->Setup();
+  boschMgr->Setup();
 }
 
 void loop()
 {
-  myAdaBme->Loop();
-  
+  boschMgr->Loop();
+
   delay(2000);
 
   myLight->UpdateLight(loopCount);

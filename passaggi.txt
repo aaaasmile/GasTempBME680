@@ -31,3 +31,7 @@ python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 
 
 == Controllare il risultato
 Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
+
+== Errori
+ld.exe section `.text1' will not fit in region `iram1_0_seg'
+Sembra che si vada out of ram

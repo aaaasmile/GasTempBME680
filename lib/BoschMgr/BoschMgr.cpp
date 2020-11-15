@@ -10,6 +10,7 @@ const uint8_t bsec_config_iaq[] = {
 ///////////////// bsec
 Bsec iaqSensor;
 String output;
+void errLeds(void);
 
 void checkIaqSensorStatus(void)
 {
