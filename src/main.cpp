@@ -15,12 +15,19 @@ Adafruit_BME680 bme; // I2C
 //Adafruit_BME680 bme(BME_CS); // hardware SPI
 //Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
-int LedRedpin = D5; // D5
-bool SwitchRed = true;
+int LedRedpin = D5; 
+int LedGreenpin = D6;
+int LedYellowpin = D7;
+
+bool SwitchRed = false;
+bool SwitchGreen = true;
+bool SwitchYellow = false;
 
 void setup()
 {
   pinMode(LedRedpin, OUTPUT);
+  pinMode(LedGreenpin, OUTPUT);
+  pinMode(LedYellowpin, OUTPUT);
 
   Serial.begin(115200);
   while (!Serial)
@@ -82,4 +89,27 @@ void loop()
     digitalWrite(LedRedpin, LOW);
     SwitchRed = true;
   }
+  if (SwitchGreen)
+  {
+    digitalWrite(LedGreenpin, HIGH);
+    SwitchGreen = false;
+    Serial.print("GREEN light to High");
+  }
+  else
+  {
+    digitalWrite(LedGreenpin, LOW);
+    SwitchGreen = true;
+  }
+  if (SwitchYellow)
+  {
+    digitalWrite(LedYellowpin, HIGH);
+    SwitchYellow = false;
+    Serial.print("YELLOW light to High");
+  }
+  else
+  {
+    digitalWrite(LedYellowpin, LOW);
+    SwitchYellow = true;
+  }
+  
 }
