@@ -65,7 +65,7 @@ void BoschMgr::Setup()
 {
     Wire.begin();
 
-    iaqSensor.begin(BME680_I2C_ADDR_PRIMARY, Wire);
+    iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
     output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
     Serial.println(output);
     checkIaqSensorStatus();

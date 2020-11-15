@@ -33,5 +33,19 @@ python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 
 Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
 
 == Errori
-ld.exe section `.text1' will not fit in region `iram1_0_seg'
+1) ld.exe section `.text1' will not fit in region `iram1_0_seg'
 Sembra che si vada out of ram
+Dal sito della libreria di bosch https://github.com/BoschSensortec/BSEC-Arduino-library al punto 4.
+bisogna cambiare questo file 
+C:\Users\igors\.platformio\packages\framework-arduinoespressif8266\tools\sdk\ld
+eagle.app.v6.common.ld.h
+ed aggiungere alla fine della sezione delle librerie:
+*libalgobsec.a:(.literal.* .text.*)
+appena prima della
+*(.irom0.literal ...
+che chiude la sezione.
+
+2) Led error status sensor -2
+Il sensore viene inizializzato con una porta sbagliata. Nella libreria bosch si usa:
+iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
+che è 0x77
