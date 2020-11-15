@@ -29,6 +29,7 @@ void setup()
 {
   myLight = new MyLight();
   myLight->Setup();
+  myLight->TurnOn();
 
   Serial.begin(115200);
   while (!Serial)
@@ -85,5 +86,6 @@ void loop()
   if (loopCount > 10)
   {
     loopCount = 0;
+    myLight->TurnOff();
   }
 }

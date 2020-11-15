@@ -10,6 +10,7 @@ MyLight::MyLight()
     this->_greenState = false;
     this->_yellowState = false;
     this->_redState = false;
+    this->_stateOn = false;
 }
 
 void MyLight::Setup()
@@ -19,8 +20,28 @@ void MyLight::Setup()
     pinMode(LedYellowpin, OUTPUT);
 }
 
+void MyLight::TurnOn()
+{
+    this->_stateOn = true;
+}
+
+void MyLight::TurnOff()
+{
+    if (this->_stateOn)
+    {
+        this->turnRed(false);
+        this->turnYellow(false);
+        this->turnGreen(false);
+    }
+    this->_stateOn = false;
+}
+
 void MyLight::UpdateLight(int state)
 {
+    if (!this->_stateOn)
+    {
+        return;
+    }
     if (state <= 5)
     {
         this->turnRed(false);
