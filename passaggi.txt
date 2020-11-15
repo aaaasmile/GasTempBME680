@@ -3,11 +3,30 @@ Dopo aver preparato la scheda con il sensore e aver provato con aurduino ide che
 voglio avere un progetto con platform io.
 In Visual Code creo un nuovo progetto usando la mia directory custom D:\Arduino\PlatformIO e mettendo
 la piattaforma nodemcu 1.0. 
-L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema.
+L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema (vedi sotto).
+
+== Librerie
 Il primo problema che ho con il codice preso di pari pari da arduino ide è che le librerie non 
-vengono riconosciute.
+vengono riconosciute. Esse sono Adafruit Sensor e Adafruit BME680.
 Vanno installate con PlatformIO. Come?
-Sono andato in PIHome alla voce Libraries. Qui ho cercato 
+Sono andato alla PIHome di Visual Code, alla voce Libraries. Qui ho cercato 
 Adafruit Unified Sensor 
 una volta trovata, ho aggiunto al progetto unsando il bottone "Add to project".
 Sembra funzionare in quanto l'errore successivo è correlato alla libreria BME680.
+Stessa procedura per BME680 e aggiunto adafruit BME680 a questo progetto tramite PlatformIO Home Library.
+Processo molto semplice che funziona con VSCode.
+Ora tornando al progetto la compilazione del firmaware funziona senza problemi con:
+CTRL + ALT + b
+
+== Upload sul target (firmware.bin)
+Per l'installazione di python e del tool esptool.py in WLC vedi il progetto Hello2.
+Apri WLC e 
+cd /mnt/d/Arduino/PlatformIO/esptool
+Check se esptool funziona con:
+python esptool.py --port /dev/ttyS4  --baud 115200 flash_id
+
+L'update del target avviene con:
+python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 0x0 ../GasTempBME680/.pio/build/nodemcuv2/firmware.bin
+
+== Controllare il risultato
+Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
