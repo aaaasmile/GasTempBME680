@@ -15,14 +15,23 @@ Adafruit_BME680 bme; // I2C
 //Adafruit_BME680 bme(BME_CS); // hardware SPI
 //Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
-void setup() {
+int LedRedpin = D5; // D5
+bool SwitchRed = true;
+
+void setup()
+{
+  pinMode(LedRedpin, OUTPUT);
+
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial)
+    ;
   Serial.println(F("My BME680 test"));
 
-  if (!bme.begin()) {
+  if (!bme.begin())
+  {
     Serial.println("Could not find a valid BME680 sensor, check wiring!");
-    while (1);
+    while (1)
+      ;
   }
 
   // Set up oversampling and filter initialization
@@ -33,8 +42,10 @@ void setup() {
   bme.setGasHeater(320, 150); // 320*C for 150 ms
 }
 
-void loop() {
-  if (! bme.performReading()) {
+void loop()
+{
+  if (!bme.performReading())
+  {
     Serial.println("Failed to perform reading :(");
     return;
   }
@@ -60,4 +71,15 @@ void loop() {
 
   Serial.println();
   delay(2000);
+  if (SwitchRed)
+  {
+    digitalWrite(LedRedpin, HIGH);
+    SwitchRed = false;
+    Serial.print("RED light to High");
+  }
+  else
+  {
+    digitalWrite(LedRedpin, LOW);
+    SwitchRed = true;
+  }
 }

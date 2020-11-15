@@ -19,6 +19,7 @@ Ora tornando al progetto la compilazione del firmaware funziona senza problemi c
 CTRL + ALT + b
 
 == Upload sul target (firmware.bin)
+Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.
 Per l'installazione di python e del tool esptool.py in WLC vedi il progetto Hello2.
 Apri WLC e 
 cd /mnt/d/Arduino/PlatformIO/esptool
