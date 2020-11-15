@@ -4,6 +4,8 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME680.h>
 
+#include <MyLight.h>
+
 #define BME_SCK 13
 #define BME_MISO 12
 #define BME_MOSI 11
@@ -15,19 +17,18 @@ Adafruit_BME680 bme; // I2C
 //Adafruit_BME680 bme(BME_CS); // hardware SPI
 //Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
-int LedRedpin = D5; 
-int LedGreenpin = D6;
-int LedYellowpin = D7;
+MyLight* myLight;
 
 bool SwitchRed = false;
 bool SwitchGreen = true;
 bool SwitchYellow = false;
 
+int loopCount = 0;
+
 void setup()
 {
-  pinMode(LedRedpin, OUTPUT);
-  pinMode(LedGreenpin, OUTPUT);
-  pinMode(LedYellowpin, OUTPUT);
+  myLight = new MyLight();
+  myLight->Setup();
 
   Serial.begin(115200);
   while (!Serial)
@@ -78,38 +79,11 @@ void loop()
 
   Serial.println();
   delay(2000);
-  if (SwitchRed)
+
+  myLight->UpdateLight(loopCount);
+  loopCount++;
+  if (loopCount > 10)
   {
-    digitalWrite(LedRedpin, HIGH);
-    SwitchRed = false;
-    Serial.print("RED light to High");
+    loopCount = 0;
   }
-  else
-  {
-    digitalWrite(LedRedpin, LOW);
-    SwitchRed = true;
-  }
-  if (SwitchGreen)
-  {
-    digitalWrite(LedGreenpin, HIGH);
-    SwitchGreen = false;
-    Serial.print("GREEN light to High");
-  }
-  else
-  {
-    digitalWrite(LedGreenpin, LOW);
-    SwitchGreen = true;
-  }
-  if (SwitchYellow)
-  {
-    digitalWrite(LedYellowpin, HIGH);
-    SwitchYellow = false;
-    Serial.print("YELLOW light to High");
-  }
-  else
-  {
-    digitalWrite(LedYellowpin, LOW);
-    SwitchYellow = true;
-  }
-  
 }
