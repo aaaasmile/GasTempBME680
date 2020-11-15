@@ -98,15 +98,15 @@ void BoschMgr::Loop()
     unsigned long time_trigger = millis();
     if (iaqSensor.run())
     { // If new data is available
-        output = String(time_trigger);
-        output += ", " + String(iaqSensor.rawTemperature);
-        output += ", " + String(iaqSensor.pressure);
-        output += ", " + String(iaqSensor.rawHumidity);
-        output += ", " + String(iaqSensor.gasResistance);
-        output += ", " + String(iaqSensor.iaq);
-        output += ", " + String(iaqSensor.iaqAccuracy);
-        output += ", " + String(iaqSensor.temperature);
-        output += ", " + String(iaqSensor.humidity);
+        output = "TS " + String(time_trigger);
+        output += ", TEMP-RAW " + String(iaqSensor.rawTemperature);
+        output += ", PRES " + String(iaqSensor.pressure);
+        output += ", HUMI-RAW " + String(iaqSensor.rawHumidity);
+        output += ", GASO " + String(iaqSensor.gasResistance);
+        output += ", IAQ " + String(iaqSensor.iaq);
+        output += ", IAQA " + String(iaqSensor.iaqAccuracy);
+        output += ", TEMP " + String(iaqSensor.temperature);
+        output += ", HUMY " + String(iaqSensor.humidity);
         Serial.println(output);
         //updateState();
     }

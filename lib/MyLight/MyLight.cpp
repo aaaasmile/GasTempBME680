@@ -77,7 +77,7 @@ void MyLight::turnGreen(bool state)
     if (state)
     {
         digitalWrite(LedGreenpin, HIGH);
-        Serial.print("GREEN light to High");
+        Serial.println("GREEN light to High");
     }
     else
     {
@@ -96,7 +96,7 @@ void MyLight::turnYellow(bool state)
     if (state)
     {
         digitalWrite(LedYellowpin, HIGH);
-        Serial.print("YELLOW light to High");
+        Serial.println("YELLOW light to High");
     }
     else
     {
@@ -115,7 +115,7 @@ void MyLight::turnRed(bool state)
     if (state)
     {
         digitalWrite(LedRedpin, HIGH);
-        Serial.print("RED light to High");
+        Serial.println("RED light to High");
     }
     else
     {
