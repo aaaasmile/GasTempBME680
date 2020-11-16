@@ -22,6 +22,7 @@ void MyLight::Setup()
 
 void MyLight::TurnOn()
 {
+    this->_loopSameVal = 0;
     this->_stateOn = true;
 }
 
@@ -36,31 +37,73 @@ void MyLight::TurnOff()
     this->_stateOn = false;
 }
 
-void MyLight::UpdateLight(int state)
+void MyLight::CheckLeds()
 {
+    this->turnRed(true);
+    this->turnYellow(true);
+    this->turnGreen(true);
+}
+
+int MyLight::calculateIAQScore(float iaq) {
+  String IAQ_text = "air quality is ";
+  int res = 0;
+
+  if      (iaq >= 301){               IAQ_text += "Hazardous"; res = 6; }
+  else if (iaq >= 201 && iaq <= 300 ){ IAQ_text += "Very Unhealthy"; res = 5;}
+  else if (iaq >= 176 && iaq <= 200 ){ IAQ_text += "Unhealthy";res = 4;}
+  else if (iaq >= 151 && iaq <= 175 ){ IAQ_text += "Unhealthy for Sensitive Groups"; res = 3;}
+  else if (iaq >=  51 && iaq <= 150 ){ IAQ_text += "Moderate"; res = 2;}
+  else if (iaq >=  00 && iaq <=  50 ){ IAQ_text += "Good";res = 1;}
+  Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text );
+
+  return res;
+}
+
+void MyLight::UpdateLight(float iaq)
+{
+    Serial.printf("UpdateLight %f ", iaq);
+
+    int oldScore = this->_iaqScore;
+    this->_iaqScore = this->calculateIAQScore(iaq);
+    if (this->_iaqScore == oldScore){
+        this->_loopSameVal++;
+    }else{
+        this->TurnOn();
+    }
+    if (this->_loopSameVal > 10){
+        this->TurnOff();
+        return;
+    }
+
     if (!this->_stateOn)
     {
         return;
     }
-    if (state <= 5)
+    if (this->_iaqScore <= 2)
     {
         this->turnRed(false);
         this->turnYellow(false);
         this->turnGreen(true);
     }
-    else if (state <= 6)
+    else if (this->_iaqScore <= 3)
     {
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(true);
     }
-    else if (state <= 8)
+    else if (this->_iaqScore <= 4)
     {
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(false);
     }
-    else if (state <= 10)
+    else if (this->_iaqScore <= 5)
+    {
+        this->turnRed(true);
+        this->turnYellow(true);
+        this->turnGreen(false);
+    }
+    else if (this->_iaqScore > 5)
     {
         this->turnRed(true);
         this->turnYellow(false);

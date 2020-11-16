@@ -16,25 +16,24 @@ void setup()
   myLight->Setup();
   myLight->TurnOn();
 
+  boschMgr = new BoschMgr();
+
   Serial.begin(115200);
   while (!Serial)
     ;
   Serial.println(F("My BME680 test"));
 
   boschMgr->Setup();
+  myLight->CheckLeds();
+  delay(500);
+  myLight->TurnOff();
 }
 
 void loop()
 {
-  boschMgr->Next();
+    float iaq = boschMgr->Next();
 
-  delay(3000);
+    delay(3000);
 
-  myLight->UpdateLight(loopCount);
-  loopCount++;
-  if (loopCount > 10)
-  {
-    loopCount = 0;
-    myLight->TurnOff();
-  }
+    myLight->UpdateLight(iaq);
 }
