@@ -26,7 +26,7 @@ void setup()
 
 void loop()
 {
-  boschMgr->Loop();
+  boschMgr->Next();
 
   delay(3000);
 

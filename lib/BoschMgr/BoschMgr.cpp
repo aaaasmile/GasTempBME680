@@ -1,4 +1,5 @@
 #include "BoschMgr.h"
+#include <EEPROM.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include "bsec.h"
@@ -7,13 +8,19 @@ const uint8_t bsec_config_iaq[] = {
 #include "config/generic_33v_3s_4d/bsec_iaq.txt"
 };
 
+#define STATE_SAVE_PERIOD UINT32_C(360 * 60 * 1000)
+
 ///////////////// bsec
 Bsec iaqSensor;
 String output;
+uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
+uint16_t stateUpdateCounter = 0;
+
 void errLeds(void);
 
 void checkIaqSensorStatus(void)
 {
+    Serial.println("Check status");
     if (iaqSensor.status != BSEC_OK)
     {
         if (iaqSensor.status < BSEC_OK)
@@ -57,12 +64,83 @@ void errLeds(void)
     delay(100);
 }
 
+void loadState(void)
+{
+    Serial.println("Load state");
+    if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE)
+    {
+        // Existing state in EEPROM
+        Serial.println("Reading state from EEPROM");
+
+        for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++)
+        {
+            bsecState[i] = EEPROM.read(i + 1);
+            Serial.println(bsecState[i], HEX);
+        }
+
+        iaqSensor.setState(bsecState);
+        checkIaqSensorStatus();
+    }
+    else
+    {
+        // Erase the EEPROM with zeroes
+        Serial.println("Erasing EEPROM");
+
+        for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE + 1; i++)
+            EEPROM.write(i, 0);
+
+        EEPROM.commit();
+    }
+}
+
+void updateState(void)
+{
+    bool update = false;
+    /* Set a trigger to save the state. Here, the state is saved every STATE_SAVE_PERIOD with the first state being saved once the algorithm achieves full calibration, i.e. iaqAccuracy = 3 */
+    if (stateUpdateCounter == 0)
+    {
+        if (iaqSensor.iaqAccuracy >= 3)
+        {
+            update = true;
+            stateUpdateCounter++;
+        }
+    }
+    else
+    {
+        /* Update every STATE_SAVE_PERIOD milliseconds */
+        if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis())
+        {
+            update = true;
+            stateUpdateCounter++;
+        }
+    }
+
+    if (update)
+    {
+        iaqSensor.getState(bsecState);
+        checkIaqSensorStatus();
+
+        Serial.println("Writing state to EEPROM");
+
+        for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++)
+        {
+            EEPROM.write(i + 1, bsecState[i]);
+            Serial.println(bsecState[i], HEX);
+        }
+
+        EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
+        EEPROM.commit();
+    }
+}
+
 BoschMgr::BoschMgr()
 {
 }
 
 void BoschMgr::Setup()
 {
+    EEPROM.begin(BSEC_MAX_STATE_BLOB_SIZE + 1); // 1st address for the length
+
     Wire.begin();
 
     iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
@@ -70,10 +148,11 @@ void BoschMgr::Setup()
     Serial.println(output);
     checkIaqSensorStatus();
 
+    Serial.println("Set config");
     iaqSensor.setConfig(bsec_config_iaq);
     checkIaqSensorStatus();
 
-    //loadState();
+    loadState();
 
     // IGSA
     // Qui c'è un override dove mancano i sensori CO2 virtuali
@@ -100,7 +179,7 @@ void BoschMgr::Setup()
     Serial.println(output);
 }
 
-void BoschMgr::Loop()
+void BoschMgr::Next()
 {
     unsigned long time_trigger = millis();
     if (iaqSensor.run())
@@ -117,7 +196,7 @@ void BoschMgr::Loop()
         output += ", CO2 " + String(iaqSensor.co2Equivalent);
         output += ", VOC " + String(iaqSensor.breathVocEquivalent);
         Serial.println(output);
-        //updateState();
+        updateState();
     }
     else
     {

@@ -49,3 +49,7 @@ che chiude la sezione.
 Il sensore viene inizializzato con una porta sbagliata. Nella libreria bosch si usa:
 iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
 che è 0x77
+
+Gli errori tipo:
+BSEC error code : -34  
+si trovano codificati nel file bsec_datatypes.h
