@@ -75,7 +75,12 @@ void BoschMgr::Setup()
 
     //loadState();
 
-    bsec_virtual_sensor_t sensorList[7] = {
+    // IGSA
+    // Qui c'è un override dove mancano i sensori CO2 virtuali
+    // Di default non hanno il sample rate (vedi funzione void Bsec::beginCommon())
+    // Qui di segiuto vengono abilitati i sensori virtuali che si desiderano
+    // L'abilitazione avviene settando BSEC_SAMPLE_RATE_LP
+    bsec_virtual_sensor_t sensorList[9] = {
         BSEC_OUTPUT_RAW_TEMPERATURE,
         BSEC_OUTPUT_RAW_PRESSURE,
         BSEC_OUTPUT_RAW_HUMIDITY,
@@ -83,9 +88,11 @@ void BoschMgr::Setup()
         BSEC_OUTPUT_IAQ,
         BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
         BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+        BSEC_OUTPUT_CO2_EQUIVALENT,
+        BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
     };
 
-    iaqSensor.updateSubscription(sensorList, 7, BSEC_SAMPLE_RATE_LP);
+    iaqSensor.updateSubscription(sensorList, 9, BSEC_SAMPLE_RATE_LP);
     checkIaqSensorStatus();
 
     // Print the header
@@ -107,6 +114,8 @@ void BoschMgr::Loop()
         output += ", IAQA " + String(iaqSensor.iaqAccuracy);
         output += ", TEMP " + String(iaqSensor.temperature);
         output += ", HUMY " + String(iaqSensor.humidity);
+        output += ", CO2 " + String(iaqSensor.co2Equivalent);
+        output += ", VOC " + String(iaqSensor.breathVocEquivalent);
         Serial.println(output);
         //updateState();
     }

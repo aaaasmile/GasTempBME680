@@ -28,7 +28,7 @@ void loop()
 {
   boschMgr->Loop();
 
-  delay(2000);
+  delay(3000);
 
   myLight->UpdateLight(loopCount);
   loopCount++;
