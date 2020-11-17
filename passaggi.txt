@@ -54,6 +54,9 @@ Gli errori tipo:
 BSEC error code : -34  
 si trovano codificati nel file bsec_datatypes.h
 
+3) Problema con #include <ESP8266WiFi.h>
+Va messo in main.cpp e allora si può usare anche nella lib.
+
 == Serial Monitor in WLC
 Servono due comandi:
 stty 115200  -F /dev/ttyS4 raw -echo

@@ -9,6 +9,7 @@ public:
     BoschMgr();
     void Setup();
     float Next();
+    String GetData() { return this->_valSensors; }
 
 private:
     void loadState();
