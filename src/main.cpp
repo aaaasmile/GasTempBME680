@@ -21,7 +21,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial)
     ;
-  Serial.println(F("My BME680 test"));
+  Serial.println(F("My BME680 test, version 0.0.1"));
 
   boschMgr->Setup();
   myLight->CheckLeds();

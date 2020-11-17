@@ -49,11 +49,12 @@ int MyLight::calculateIAQScore(float iaq) {
   int res = 0;
 
   if      (iaq >= 301){               IAQ_text += "Hazardous"; res = 6; }
-  else if (iaq >= 201 && iaq <= 300 ){ IAQ_text += "Very Unhealthy"; res = 5;}
-  else if (iaq >= 176 && iaq <= 200 ){ IAQ_text += "Unhealthy";res = 4;}
-  else if (iaq >= 151 && iaq <= 175 ){ IAQ_text += "Unhealthy for Sensitive Groups"; res = 3;}
-  else if (iaq >=  51 && iaq <= 150 ){ IAQ_text += "Moderate"; res = 2;}
-  else if (iaq >=  00 && iaq <=  50 ){ IAQ_text += "Good";res = 1;}
+  else if (iaq >= 251 && iaq <= 300 ){ IAQ_text += "Very Unhealthy"; res = 5;}
+  else if (iaq >= 201 && iaq <= 250 ){ IAQ_text += "Unhealthy";res = 4;}
+  else if (iaq >= 151 && iaq <= 200 ){ IAQ_text += "Unhealthy";res = 3;}
+  else if (iaq >= 101 && iaq <= 150 ){ IAQ_text += "Unhealthy for Sensitive Groups"; res = 2;}
+  else if (iaq >=  51 && iaq <= 100 ){ IAQ_text += "Moderate"; res = 1;}
+  else if (iaq >=  00 && iaq <=  50 ){ IAQ_text += "Good";res = 0;}
   Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text );
 
   return res;
@@ -79,32 +80,37 @@ void MyLight::UpdateLight(float iaq)
     {
         return;
     }
-    if (this->_iaqScore <= 2)
+    if (this->_iaqScore <= 1)
     {
+        // green
         this->turnRed(false);
         this->turnYellow(false);
         this->turnGreen(true);
     }
-    else if (this->_iaqScore <= 3)
+    else if (this->_iaqScore <= 2)
     {
+        // gree/yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(true);
     }
-    else if (this->_iaqScore <= 4)
+    else if (this->_iaqScore <= 3)
     {
+        // yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(false);
     }
     else if (this->_iaqScore <= 5)
     {
+        // yellow / red
         this->turnRed(true);
         this->turnYellow(true);
         this->turnGreen(false);
     }
-    else if (this->_iaqScore > 5)
+    else 
     {
+        // red
         this->turnRed(true);
         this->turnYellow(false);
         this->turnGreen(false);
