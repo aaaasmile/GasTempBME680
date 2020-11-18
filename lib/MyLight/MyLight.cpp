@@ -28,6 +28,7 @@ void MyLight::TurnOn()
 
 void MyLight::TurnOff()
 {
+    this->_loopSameVal = 0;
     if (this->_stateOn)
     {
         this->turnRed(false);
@@ -62,7 +63,7 @@ int MyLight::calculateIAQScore(float iaq) {
 
 void MyLight::UpdateLight(float iaq)
 {
-    Serial.printf("UpdateLight %f ", iaq);
+    Serial.printf("UpdateLight %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
 
     int oldScore = this->_iaqScore;
     this->_iaqScore = this->calculateIAQScore(iaq);
