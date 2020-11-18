@@ -5,6 +5,10 @@ In Visual Code creo un nuovo progetto usando la mia directory custom D:\Arduino\
 la piattaforma nodemcu 1.0. 
 L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema (vedi sotto).
 
+== ArduinoIDE Setup
+Vedi il link https://www.mikrocontroller-elektronik.de/nodemcu-esp8266-tutorial-wlan-board-arduino-ide/
+(esp8266 json nel device manager)
+
 == Librerie
 Il primo problema che ho con il codice preso di pari pari da arduino ide è che le librerie non 
 vengono riconosciute. Esse sono Adafruit Sensor e Adafruit BME680.
@@ -17,6 +21,8 @@ Stessa procedura per BME680 e aggiunto adafruit BME680 a questo progetto tramite
 Processo molto semplice che funziona con VSCode.
 Ora tornando al progetto la compilazione del firmaware funziona senza problemi con:
 CTRL + ALT + b
+Per la console seriale
+CTRL + ALT + s
 
 == Upload sul target (firmware.bin)
 Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.

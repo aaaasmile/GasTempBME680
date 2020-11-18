@@ -33,7 +33,8 @@ void Broadcast::Setup()
     {
         delay(500);
         Serial.print(".");
-        if (retry > 4)
+        retry++;
+        if (retry > 3)
         {
             connected = false;
             break;
