@@ -34,7 +34,7 @@ void Broadcast::Setup()
         delay(500);
         Serial.print(".");
         retry++;
-        if (retry > 3)
+        if (retry > 5)
         {
             connected = false;
             break;
@@ -43,7 +43,9 @@ void Broadcast::Setup()
     if (connected)
     {
         Serial.println("");
-        Serial.println("WiFi connected");
+        IPAddress ip = WiFi.localIP();
+        Serial.println("WiFi connected. Local IP " + ip.toString());
+        
     }
     else
     {
