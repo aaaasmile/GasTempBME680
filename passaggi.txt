@@ -68,3 +68,31 @@ Servono due comandi:
 stty 115200  -F /dev/ttyS4 raw -echo
 cat /dev/ttyS4
 
+== Schema
+
+
+
+
+                                                                   +---------------------------+
+                                                                   |                           |
+      +------------------+                                         |                        D5 |   +---------------------------->  Led Red
+      |                  |                                         |                           |
+      |                  |  VCC                                    |                        D6 |   +---------------------------->  Led Green
+      |                  +-----------------------------------------|  3v3                      |
+      |                  |  GND                                    |                           |
+      |                  +-----------------------------------------+  GND                   D7 |   +---------------------------->  Led Yellow
+      |     BME680       |  SCL                                    |                           |
+      |                  +-----------------------------------------+  D1                       |
+      |                  |                                         |                           |
+      |                  |  SDA                                    |                           |
+      |                  |                                         |             ESP8266       |
+      |                  +---------------------------------------->+                           |
+      +------------------+                                         |  D2                       |
+                                                                   |                        A0 | +----------------------------> Button
+                                                                   |                           |
+                                                                   +---------------------------+
+
+
+Il tasto per mostrare lo stato è collegato al pin A0 con una resistenza di 220Ohm. Il tasto
+è collegato in diagonale e l'altro capo è 3.3V. Quando il tasto è premuto il valore di A0 va sale a 1024.
+Quando non è premuto il valore letto è < 10. Ho visto 1 e 7 nel log.  

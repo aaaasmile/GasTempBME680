@@ -45,71 +45,116 @@ void MyLight::CheckLeds()
     this->turnGreen(true);
 }
 
-int MyLight::calculateIAQScore(float iaq) {
-  String IAQ_text = "air quality is ";
-  int res = 0;
+int MyLight::calculateIAQScore(float iaq)
+{
+    String IAQ_text = "air quality is ";
+    int res = 0;
 
-  if      (iaq > 301){               IAQ_text += "Hazardous"; res = 6; }
-  else if (iaq > 250 && iaq <= 300 ){ IAQ_text += "Very Unhealthy"; res = 5;}
-  else if (iaq > 200 && iaq <= 250 ){ IAQ_text += "More than Unhealthy";res = 4;}
-  else if (iaq > 150 && iaq <= 200 ){ IAQ_text += "Unhealthy";res = 3;}
-  else if (iaq > 100 && iaq <= 150 ){ IAQ_text += "Unhealthy for Sensitive Groups"; res = 2;}
-  else if (iaq >  50 && iaq <= 100 ){ IAQ_text += "Moderate"; res = 1;}
-  else if (iaq >=  00 && iaq <=  50 ){ IAQ_text += "Good";res = 0;}
-  Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text );
+    if (iaq > 301)
+    {
+        IAQ_text += "Hazardous";
+        res = 7;
+    }
+    else if (iaq > 250 && iaq <= 300)
+    {
+        IAQ_text += "Very Unhealthy";
+        res = 6;
+    }
+    else if (iaq > 200 && iaq <= 250)
+    {
+        IAQ_text += "More than Unhealthy";
+        res = 5;
+    }
+    else if (iaq > 150 && iaq <= 200)
+    {
+        IAQ_text += "Unhealthy";
+        res = 4;
+    }
+    else if (iaq > 100 && iaq <= 150)
+    {
+        IAQ_text += "Unhealthy for Sensitive Groups";
+        res = 3;
+    }
+    else if (iaq > 50 && iaq <= 100)
+    {
+        IAQ_text += "Moderate";
+        res = 2;
+    }
+    else if (iaq >= 00 && iaq <= 50)
+    {
+        IAQ_text += "Good";
+        res = 1;
+    }
+    Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
 
-  return res;
+    return res;
+}
+
+void MyLight::LightTheState()
+{
+    Serial.println("Show the current score " + String(this->_iaqScore));
+    this->TurnOn();
+    this->lightTheState();
 }
 
 void MyLight::UpdateLight(float iaq)
 {
-    Serial.printf("UpdateLight %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
+    Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
 
     int oldScore = this->_iaqScore;
     this->_iaqScore = this->calculateIAQScore(iaq);
-    if (this->_iaqScore == oldScore){
+    if (this->_iaqScore == oldScore)
+    {
         this->_loopSameVal++;
-    }else{
+    }
+    else
+    {
+        Serial.println("Trigger a led change");
         this->TurnOn();
     }
-    if (this->_loopSameVal > 10){
+    if (this->_loopSameVal > 10)
+    {
         this->TurnOff();
         return;
     }
+    this->lightTheState();
+}
 
+void MyLight::lightTheState()
+{
     if (!this->_stateOn)
     {
         return;
     }
-    if (this->_iaqScore <= 1)
+    if (this->_iaqScore <= 2)
     {
         // green
         this->turnRed(false);
         this->turnYellow(false);
         this->turnGreen(true);
     }
-    else if (this->_iaqScore <= 2)
+    else if (this->_iaqScore <= 3)
     {
         // gree/yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(true);
     }
-    else if (this->_iaqScore <= 3)
+    else if (this->_iaqScore <= 4)
     {
         // yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(false);
     }
-    else if (this->_iaqScore <= 5)
+    else if (this->_iaqScore <= 6)
     {
         // yellow / red
         this->turnRed(true);
         this->turnYellow(true);
         this->turnGreen(false);
     }
-    else 
+    else
     {
         // red
         this->turnRed(true);

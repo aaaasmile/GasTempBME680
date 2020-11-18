@@ -15,11 +15,12 @@ Bsec iaqSensor;
 
 uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
 
-BoschMgr::BoschMgr()
+BoschMgr::BoschMgr(bool useErpomState)
 {
     this->_stateUpdateCounter = 0;
     this->_iaq = 0;
     this->_co2Equivalent = 0;
+    this->_useEpromState = useErpomState;
 }
 
 
@@ -72,6 +73,8 @@ void BoschMgr::errLeds(void)
 
 void BoschMgr::loadState(void)
 {
+    if (!this->_useEpromState) return;
+
     Serial.println("Load state");
     if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE)
     {
@@ -101,6 +104,8 @@ void BoschMgr::loadState(void)
 
 void BoschMgr::updateState(void)
 {
+    if (!this->_useEpromState) return;
+
     bool update = false;
     /* Set a trigger to save the state. Here, the state is saved every STATE_SAVE_PERIOD with the first state being saved once the algorithm achieves full calibration, i.e. iaqAccuracy = 3 */
     if (this->_stateUpdateCounter == 0)
@@ -151,7 +156,7 @@ void BoschMgr::Setup()
     Serial.println(output);
     this->checkIaqSensorStatus();
 
-    Serial.println("Set config");
+    Serial.println("Set config. Using eprom state? " + String(this->_useEpromState));
     iaqSensor.setConfig(bsec_config_iaq);
     this->checkIaqSensorStatus();
 

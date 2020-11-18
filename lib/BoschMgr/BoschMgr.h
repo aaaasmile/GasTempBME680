@@ -6,7 +6,7 @@
 class BoschMgr
 {
 public:
-    BoschMgr();
+    BoschMgr(bool useErpomState);
     void Setup();
     float Next();
     String GetData() { return this->_valSensors; }
@@ -19,6 +19,7 @@ private:
 
     String _valSensors;
     uint16_t _stateUpdateCounter;
+    bool _useEpromState;
 
     float _co2Equivalent;
     float _iaq;
