@@ -10,10 +10,11 @@ public:
 
     void SendData(String data);
     void Setup();
+
 private:
-    /* data */
-
+    bool _connected;
+    int _bufPos;
+    int _overPos;
 };
-
 
 #endif

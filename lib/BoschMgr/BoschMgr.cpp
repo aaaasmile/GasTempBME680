@@ -146,6 +146,7 @@ void BoschMgr::updateState(void)
 
 void BoschMgr::Setup()
 {
+    Serial.println("BoschMgr::Setup");
     String output;
     EEPROM.begin(BSEC_MAX_STATE_BLOB_SIZE + 1); // 1st address for the length
 
