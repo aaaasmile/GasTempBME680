@@ -1,0 +1,5 @@
+Here there is a need of a file that defines the wifi credential:
+The file is called secret.txt and it is defined:
+
+#define STASSID "My SSID"
+#define STAPSK  "my secret ssid password"

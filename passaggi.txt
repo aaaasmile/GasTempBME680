@@ -5,6 +5,10 @@ In Visual Code creo un nuovo progetto usando la mia directory custom D:\Arduino\
 la piattaforma nodemcu 1.0. 
 L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema (vedi sotto).
 
+== ArduinoIDE Setup
+Vedi il link https://www.mikrocontroller-elektronik.de/nodemcu-esp8266-tutorial-wlan-board-arduino-ide/
+(esp8266 json nel device manager)
+
 == Librerie
 Il primo problema che ho con il codice preso di pari pari da arduino ide è che le librerie non 
 vengono riconosciute. Esse sono Adafruit Sensor e Adafruit BME680.
@@ -17,6 +21,8 @@ Stessa procedura per BME680 e aggiunto adafruit BME680 a questo progetto tramite
 Processo molto semplice che funziona con VSCode.
 Ora tornando al progetto la compilazione del firmaware funziona senza problemi con:
 CTRL + ALT + b
+Per la console seriale
+CTRL + ALT + s
 
 == Upload sul target (firmware.bin)
 Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.
@@ -31,3 +37,62 @@ python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 
 
 == Controllare il risultato
 Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
+
+== Errori
+1) ld.exe section `.text1' will not fit in region `iram1_0_seg'
+Sembra che si vada out of ram
+Dal sito della libreria di bosch https://github.com/BoschSensortec/BSEC-Arduino-library al punto 4.
+bisogna cambiare questo file 
+C:\Users\igors\.platformio\packages\framework-arduinoespressif8266\tools\sdk\ld
+eagle.app.v6.common.ld.h
+ed aggiungere alla fine della sezione delle librerie:
+*libalgobsec.a:(.literal.* .text.*)
+appena prima della
+*(.irom0.literal ...
+che chiude la sezione.
+
+2) Led error status sensor -2
+Il sensore viene inizializzato con una porta sbagliata. Nella libreria bosch si usa:
+iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
+che è 0x77
+
+Gli errori tipo:
+BSEC error code : -34  
+si trovano codificati nel file bsec_datatypes.h
+
+3) Problema con #include <ESP8266WiFi.h>
+Va messo in main.cpp e allora si può usare anche nella lib.
+
+== Serial Monitor in WLC
+Servono due comandi:
+stty 115200  -F /dev/ttyS4 raw -echo
+cat /dev/ttyS4
+
+== Schema
+
+
+
+
+                                                                   +---------------------------+
+                                                                   |                           |
+      +------------------+                                         |                        D5 |   +---------------------------->  Led Red
+      |                  |                                         |                           |
+      |                  |  VCC                                    |                        D6 |   +---------------------------->  Led Green
+      |                  +-----------------------------------------|  3v3                      |
+      |                  |  GND                                    |                           |
+      |                  +-----------------------------------------+  GND                   D7 |   +---------------------------->  Led Yellow
+      |     BME680       |  SCL                                    |                           |
+      |                  +-----------------------------------------+  D1                       |
+      |                  |                                         |                           |
+      |                  |  SDA                                    |                           |
+      |                  |                                         |             ESP8266       |
+      |                  +---------------------------------------->+                           |
+      +------------------+                                         |  D2                       |
+                                                                   |                        A0 | +----------------------------> Button
+                                                                   |                           |
+                                                                   +---------------------------+
+
+
+Il tasto per mostrare lo stato è collegato al pin A0 con una resistenza di 220Ohm. Il tasto
+è collegato in diagonale e l'altro capo è 3.3V. Quando il tasto è premuto il valore di A0 va sale a 1024.
+Quando non è premuto il valore letto è < 10. Ho visto 1 e 7 nel log.  

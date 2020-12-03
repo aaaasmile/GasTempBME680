@@ -22,11 +22,13 @@ void MyLight::Setup()
 
 void MyLight::TurnOn()
 {
+    this->_loopSameVal = 0;
     this->_stateOn = true;
 }
 
 void MyLight::TurnOff()
 {
+    this->_loopSameVal = 0;
     if (this->_stateOn)
     {
         this->turnRed(false);
@@ -36,32 +38,125 @@ void MyLight::TurnOff()
     this->_stateOn = false;
 }
 
-void MyLight::UpdateLight(int state)
+void MyLight::CheckLeds()
+{
+    this->turnRed(true);
+    this->turnYellow(true);
+    this->turnGreen(true);
+}
+
+int MyLight::calculateIAQScore(float iaq)
+{
+    String IAQ_text = "air quality is ";
+    int res = 0;
+
+    if (iaq > 301)
+    {
+        IAQ_text += "Hazardous";
+        res = 7;
+    }
+    else if (iaq > 250 && iaq <= 300)
+    {
+        IAQ_text += "Very Unhealthy";
+        res = 6;
+    }
+    else if (iaq > 200 && iaq <= 250)
+    {
+        IAQ_text += "More than Unhealthy";
+        res = 5;
+    }
+    else if (iaq > 150 && iaq <= 200)
+    {
+        IAQ_text += "Unhealthy";
+        res = 4;
+    }
+    else if (iaq > 100 && iaq <= 150)
+    {
+        IAQ_text += "Unhealthy for Sensitive Groups";
+        res = 3;
+    }
+    else if (iaq > 50 && iaq <= 100)
+    {
+        IAQ_text += "Moderate";
+        res = 2;
+    }
+    else if (iaq >= 00 && iaq <= 50)
+    {
+        IAQ_text += "Good";
+        res = 1;
+    }
+    Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
+
+    return res;
+}
+
+void MyLight::LightTheState()
+{
+    Serial.println("Show the current score " + String(this->_iaqScore));
+    this->TurnOn();
+    this->lightTheState();
+}
+
+void MyLight::UpdateLight(float iaq)
+{
+    Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
+
+    int oldScore = this->_iaqScore;
+    this->_iaqScore = this->calculateIAQScore(iaq);
+    if (this->_iaqScore == oldScore)
+    {
+        this->_loopSameVal++;
+    }
+    else
+    {
+        Serial.println("Trigger a led change");
+        this->TurnOn();
+    }
+    if (this->_loopSameVal > 10)
+    {
+        this->TurnOff();
+        return;
+    }
+    this->lightTheState();
+}
+
+void MyLight::lightTheState()
 {
     if (!this->_stateOn)
     {
         return;
     }
-    if (state <= 5)
+    if (this->_iaqScore <= 2)
     {
+        // green
         this->turnRed(false);
         this->turnYellow(false);
         this->turnGreen(true);
     }
-    else if (state <= 6)
+    else if (this->_iaqScore <= 3)
     {
+        // gree/yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(true);
     }
-    else if (state <= 8)
+    else if (this->_iaqScore <= 4)
     {
+        // yellow
         this->turnRed(false);
         this->turnYellow(true);
         this->turnGreen(false);
     }
-    else if (state <= 10)
+    else if (this->_iaqScore <= 6)
     {
+        // yellow / red
+        this->turnRed(true);
+        this->turnYellow(true);
+        this->turnGreen(false);
+    }
+    else
+    {
+        // red
         this->turnRed(true);
         this->turnYellow(false);
         this->turnGreen(false);
@@ -77,7 +172,7 @@ void MyLight::turnGreen(bool state)
     if (state)
     {
         digitalWrite(LedGreenpin, HIGH);
-        Serial.print("GREEN light to High");
+        Serial.println("GREEN light to High");
     }
     else
     {
@@ -96,7 +191,7 @@ void MyLight::turnYellow(bool state)
     if (state)
     {
         digitalWrite(LedYellowpin, HIGH);
-        Serial.print("YELLOW light to High");
+        Serial.println("YELLOW light to High");
     }
     else
     {
@@ -115,7 +210,7 @@ void MyLight::turnRed(bool state)
     if (state)
     {
         digitalWrite(LedRedpin, HIGH);
-        Serial.print("RED light to High");
+        Serial.println("RED light to High");
     }
     else
     {
