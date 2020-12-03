@@ -5,11 +5,11 @@
 
 #include <MyLight.h>
 #include <BoschMgr.h>
-#include <Broadcast.h>
+#include <Uploader.h>
 
 MyLight *myLight;
 BoschMgr *boschMgr;
-Broadcast *broadCaster;
+Uploader *uploader;
 
 const int analogInPin = A0; 
 
@@ -27,7 +27,7 @@ void setup()
       ;
     Serial.println(F("My BME680 test, version 0.1.2"));
 
-    broadCaster->Setup();
+    uploader->Setup();
     boschMgr->Setup();
     myLight->CheckLeds();
     delay(500);
@@ -50,5 +50,5 @@ void loop()
     }
     
     myLight->UpdateLight(iaq);
-    broadCaster->SendData(boschMgr->GetData());
+    uploader->SendData(boschMgr->GetData());
 }

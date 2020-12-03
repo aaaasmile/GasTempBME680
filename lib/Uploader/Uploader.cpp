@@ -5,19 +5,20 @@
 #include <WiFi.h>
 #endif
 
-#include "Broadcast.h"
+#include "Uploader.h"
 #include "secret.txt"
 
 const char *ssid = STASSID;
 const char *password = STAPSK;
 const char *host = HOSTFORCONN;
 const int port = PORTFORCONN;
+const char fingerprint[] PROGMEM = FINGERPRINTMYSRV;
 
-Broadcast::Broadcast()
+Uploader::Uploader()
 {
 }
 
-void Broadcast::Setup()
+void Uploader::Setup()
 {
     // Connect to WiFi network
     Serial.println();
@@ -53,13 +54,17 @@ void Broadcast::Setup()
     }
 }
 
-void Broadcast::SendData(String data)
+void Uploader::SendData(String data)
 {
-    WiFiClient httpClient;
-    httpClient.setTimeout(7000);
+    WiFiClientSecure httpsClient;
+    Serial.printf("Using fingerprint '%s'\n", fingerprint);
+
+    httpsClient.setFingerprint(fingerprint);
+
+    httpsClient.setTimeout(7000);
     int r = 0; //retry counter
     int max_retry = 3;
-    while ((!httpClient.connect(host, port)) && (r < max_retry))
+    while ((!httpsClient.connect(host, port)) && (r < max_retry))
     {
         delay(100);
         Serial.print(".");
@@ -82,7 +87,7 @@ void Broadcast::SendData(String data)
     //POST Data
     Link = "/iot/PubData";
 
-    httpClient.print(String("POST ") + Link + " HTTP/1.1\r\n" +
+    httpsClient.print(String("POST ") + Link + " HTTP/1.1\r\n" +
                      "Host: " + host + "\r\n" +
                      "Content-Type: application/x-www-form-urlencoded" + "\r\n" +
                      "Content-Length: " + String(data.length()) + "\r\n\r\n" +
@@ -90,24 +95,24 @@ void Broadcast::SendData(String data)
                      "Connection: close\r\n\r\n");
     Serial.println("request sent");
 
-    while (httpClient.connected())
-    {
-        String line = httpClient.readStringUntil('\n');
-        if (line == "\r")
-        {
-            Serial.println("headers received");
-            break;
-        }
-    }
+    // while (httpsClient.connected())
+    // {
+    //     String line = httpsClient.readStringUntil('\n');
+    //     if (line == "\r")
+    //     {
+    //         Serial.println("headers received");
+    //         break;
+    //     }
+    // }
 
-    Serial.println("reply was:");
-    Serial.println("==========");
-    String line;
-    while (httpClient.available())
-    {
-        line = httpClient.readStringUntil('\n'); //Read Line by Line
-        Serial.println(line);                    //Print response
-    }
-    Serial.println("==========");
+    // Serial.println("reply was:");
+    // Serial.println("==========");
+    // String line;
+    // while (httpsClient.available())
+    // {
+    //     line = httpsClient.readStringUntil('\n'); //Read Line by Line
+    //     Serial.println(line);                    //Print response
+    // }
+    // Serial.println("==========");
     Serial.println("closing connection");
 }

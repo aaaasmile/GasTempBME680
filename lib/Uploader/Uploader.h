@@ -1,12 +1,12 @@
-#ifndef _BROADCAST_H__
-#define _BROADCAST_H_
+#ifndef _UPLOADER_H_
+#define _UPLOADER_H_
 
 #include "WString.h"
 
-class Broadcast
+class Uploader
 {
 public:
-    Broadcast();
+    Uploader();
 
     void SendData(String data);
     void Setup();
