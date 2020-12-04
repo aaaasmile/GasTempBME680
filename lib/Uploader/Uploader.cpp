@@ -13,6 +13,8 @@ const char *password = STAPSK;
 const char *host = HOSTFORCONN;
 const int port = PORTFORCONN;
 const char fingerprint[] PROGMEM = FINGERPRINTMYSRV;
+const char *guidsensor = SENSOR_GUID_MY;
+const char *pubLink = PUBDATALINK;
 
 Uploader::Uploader()
 {
@@ -85,34 +87,12 @@ void Uploader::SendData(String data)
     String getData, Link;
 
     //POST Data
-    Link = "/iot/PubData";
-
-    httpsClient.print(String("POST ") + Link + " HTTP/1.1\r\n" +
+    httpsClient.print(String("POST ") + pubLink + " HTTP/1.1\r\n" +
                      "Host: " + host + "\r\n" +
                      "Content-Type: application/x-www-form-urlencoded" + "\r\n" +
+                     "DeviceToken: " + guidsensor  + "\r\n" +
                      "Content-Length: " + String(data.length()) + "\r\n\r\n" +
                      data + "\r\n" +
                      "Connection: close\r\n\r\n");
-    Serial.println("request sent");
-
-    // while (httpsClient.connected())
-    // {
-    //     String line = httpsClient.readStringUntil('\n');
-    //     if (line == "\r")
-    //     {
-    //         Serial.println("headers received");
-    //         break;
-    //     }
-    // }
-
-    // Serial.println("reply was:");
-    // Serial.println("==========");
-    // String line;
-    // while (httpsClient.available())
-    // {
-    //     line = httpsClient.readStringUntil('\n'); //Read Line by Line
-    //     Serial.println(line);                    //Print response
-    // }
-    // Serial.println("==========");
     Serial.println("closing connection");
 }
