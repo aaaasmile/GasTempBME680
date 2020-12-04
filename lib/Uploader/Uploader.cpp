@@ -59,7 +59,7 @@ void Uploader::Setup()
 void Uploader::SendData(String data)
 {
     WiFiClientSecure httpsClient;
-    Serial.printf("Using fingerprint '%s'\n", fingerprint);
+    Serial.printf("Using fingerprint '%s' and host %s\n", fingerprint, host);
 
     httpsClient.setFingerprint(fingerprint);
 
