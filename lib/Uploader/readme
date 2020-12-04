@@ -3,3 +3,11 @@ The file is called secret.txt and it is defined:
 
 #define STASSID "My SSID"
 #define STAPSK  "my secret ssid password"
+
+
+#define HOSTFORCONN "<host>"
+#define PORTFORCONN <port>
+#define FINGERPRINTMYSRV "something like 4a 2d ....";
+#define PUBDATALINK "<link>"
+
+#define SENSOR_GUID_MY "<device token>"
