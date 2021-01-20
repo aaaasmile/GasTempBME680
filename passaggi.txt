@@ -96,3 +96,17 @@ cat /dev/ttyS4
 Il tasto per mostrare lo stato è collegato al pin A0 con una resistenza di 220Ohm. Il tasto
 è collegato in diagonale e l'altro capo è 3.3V. Quando il tasto è premuto il valore di A0 va sale a 1024.
 Quando non è premuto il valore letto è < 10. Ho visto 1 e 7 nel log.  
+
+== Comunicazione col server
+Ho impostato il software per comunicare col server dopo aver collezionato un certo numero di dati.
+Dati che vengono mandato come stringa. Campi separati da virgola e recod da \n. Esempio di un record:
+TS: 140255, TEMP-RAW: 21.41, PRES: 100174.00, HUMI-RAW: 47.32, GASO: 84509.00, IAQ: 25.00, IAQA: 0, TEMP: 21.35, HUMY: 47.46, CO2: 500.00, VOC: 0.50
+
+Il protocollo usato per comunicare è https. Il client ha memorizzato nel software il fingerprint
+del ceritficato del server. 
+L'autentificazione avviene per mezzo di un token messo nell'header DeviceToken (shared key).
+
+== Sensore BME680
+Il sensore Bosch BME680 legge diversi parametri dell'aria e la libreria bme inclusa calcola a livello software
+la qualità e la quantità di CO2. Parametro indiretto dal valore VOC.
+La lettura del valore avviene ogni 3 secondi.

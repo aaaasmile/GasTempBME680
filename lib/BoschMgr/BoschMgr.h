@@ -8,13 +8,13 @@ class BoschMgr
 public:
     BoschMgr(bool useErpomState);
     void Setup();
-    float Next();
+    float Next(bool debug);
     String GetData() { return this->_valSensors; }
 
 private:
     void loadState();
     void updateState();
-    void checkIaqSensorStatus();
+    void checkIaqSensorStatus(bool debug);
     void errLeds();
 
     String _valSensors;

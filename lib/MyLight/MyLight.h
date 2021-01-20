@@ -4,7 +4,7 @@
 class MyLight
 {
 public:
-    MyLight();
+    MyLight(bool debug);
     void Setup();
     void UpdateLight(float iaq);
     void TurnOn();
@@ -26,6 +26,7 @@ private:
 
     int _iaqScore;
     int _loopSameVal;
+    bool _debug;
 };
 
 #endif

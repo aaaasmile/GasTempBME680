@@ -23,11 +23,14 @@ BoschMgr::BoschMgr(bool useErpomState)
     this->_useEpromState = useErpomState;
 }
 
-
-void BoschMgr::checkIaqSensorStatus(void)
+void BoschMgr::checkIaqSensorStatus(bool debug)
 {
+    // this function is called between two sensor data
     String output;
-    Serial.println("Check status");
+    if (debug)
+    {
+        Serial.println("Check status");
+    }
     if (iaqSensor.status != BSEC_OK)
     {
         if (iaqSensor.status < BSEC_OK)
@@ -39,8 +42,11 @@ void BoschMgr::checkIaqSensorStatus(void)
         }
         else
         {
-            output = "BSEC warning code : " + String(iaqSensor.status);
-            Serial.println(output);
+            if (debug)
+            {
+                output = "BSEC warning code : " + String(iaqSensor.status);
+                Serial.println(output);
+            }
         }
     }
 
@@ -55,8 +61,11 @@ void BoschMgr::checkIaqSensorStatus(void)
         }
         else
         {
-            output = "BME680 warning code : " + String(iaqSensor.bme680Status);
-            Serial.println(output);
+            if (debug)
+            {
+                output = "BME680 warning code : " + String(iaqSensor.bme680Status);
+                Serial.println(output);
+            }
         }
     }
     iaqSensor.status = BSEC_OK;
@@ -73,7 +82,8 @@ void BoschMgr::errLeds(void)
 
 void BoschMgr::loadState(void)
 {
-    if (!this->_useEpromState) return;
+    if (!this->_useEpromState)
+        return;
 
     Serial.println("Load state");
     if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE)
@@ -88,7 +98,7 @@ void BoschMgr::loadState(void)
         }
 
         iaqSensor.setState(bsecState);
-        checkIaqSensorStatus();
+        checkIaqSensorStatus(false);
     }
     else
     {
@@ -104,7 +114,8 @@ void BoschMgr::loadState(void)
 
 void BoschMgr::updateState(void)
 {
-    if (!this->_useEpromState) return;
+    if (!this->_useEpromState)
+        return;
 
     bool update = false;
     /* Set a trigger to save the state. Here, the state is saved every STATE_SAVE_PERIOD with the first state being saved once the algorithm achieves full calibration, i.e. iaqAccuracy = 3 */
@@ -129,7 +140,7 @@ void BoschMgr::updateState(void)
     if (update)
     {
         iaqSensor.getState(bsecState);
-        this->checkIaqSensorStatus();
+        this->checkIaqSensorStatus(false);
 
         Serial.println("Writing state to EEPROM");
 
@@ -154,11 +165,11 @@ void BoschMgr::Setup()
     iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
     output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
     Serial.println(output);
-    this->checkIaqSensorStatus();
+    this->checkIaqSensorStatus(true);
 
     Serial.println("Set config. Using eprom state? " + String(this->_useEpromState));
     iaqSensor.setConfig(bsec_config_iaq);
-    this->checkIaqSensorStatus();
+    this->checkIaqSensorStatus(true);
 
     this->loadState();
 
@@ -180,19 +191,20 @@ void BoschMgr::Setup()
     };
 
     iaqSensor.updateSubscription(sensorList, 9, BSEC_SAMPLE_RATE_LP);
-    this->checkIaqSensorStatus();
+    this->checkIaqSensorStatus(true);
 
     // Print the header
     String header = "Timestamp [ms], raw temperature [°C], pressure [hPa], raw relative humidity [%], gas [Ohm], IAQ, IAQ accuracy, temperature [°C], relative humidity [%]";
     Serial.println(header);
 }
 
-float BoschMgr::Next()
+float BoschMgr::Next(bool debug)
 {
     //Serial.println("Next is called");
     unsigned long time_trigger = millis();
     if (iaqSensor.run())
-    { // If new data is available
+    {
+        // new data are available, that  means the delay between two calls is gone
         this->_valSensors = "TS: " + String(time_trigger);
         this->_valSensors += ", TEMP-RAW: " + String(iaqSensor.rawTemperature);
         this->_valSensors += ", PRES: " + String(iaqSensor.pressure);
@@ -204,7 +216,10 @@ float BoschMgr::Next()
         this->_valSensors += ", HUMY: " + String(iaqSensor.humidity);
         this->_valSensors += ", CO2: " + String(iaqSensor.co2Equivalent);
         this->_valSensors += ", VOC: " + String(iaqSensor.breathVocEquivalent);
-        Serial.println(this->_valSensors);
+        if (debug)
+        {
+            Serial.println(this->_valSensors);
+        }
 
         this->_iaq = iaqSensor.iaq;
         this->_co2Equivalent = iaqSensor.co2Equivalent;
@@ -213,7 +228,7 @@ float BoschMgr::Next()
     }
     else
     {
-        this->checkIaqSensorStatus();
+        this->checkIaqSensorStatus(debug);
     }
     return this->_iaq;
 }

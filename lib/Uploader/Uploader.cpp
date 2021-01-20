@@ -48,7 +48,6 @@ void Uploader::Setup()
         Serial.println("");
         IPAddress ip = WiFi.localIP();
         Serial.println("WiFi connected. Local IP " + ip.toString());
-        
     }
     else
     {
@@ -56,10 +55,27 @@ void Uploader::Setup()
     }
 }
 
-void Uploader::SendData(String data)
+String g_dataBuff;
+void Uploader::SendData(String dataLine, bool debug)
 {
+    if (g_dataBuff == "")
+    {
+        g_dataBuff = dataLine;
+    }
+    else
+    {
+        g_dataBuff = g_dataBuff + "\n" + dataLine;
+    }
+    if (g_dataBuff.length() < 3072) // approx 90sec
+    {
+        return;
+    }
+
     WiFiClientSecure httpsClient;
-    Serial.printf("Using fingerprint '%s' and host %s\n", fingerprint, host);
+    if (debug)
+    {
+        Serial.printf("Using fingerprint '%s' and host %s\n", fingerprint, host);
+    }
 
     httpsClient.setFingerprint(fingerprint);
 
@@ -69,30 +85,44 @@ void Uploader::SendData(String data)
     while ((!httpsClient.connect(host, port)) && (r < max_retry))
     {
         delay(100);
-        Serial.print(".");
+        if (debug)
+        {
+            Serial.print(".");
+        }
         r++;
     }
     if (r == max_retry)
     {
-        Serial.println("Connection failed");
+        if (debug)
+        {
+            Serial.println("Connection failed");
+        }
         return;
     }
     else
     {
-        Serial.println("Connected to web");
+        if (debug)
+        {
+            Serial.println("Connected to web");
+        }
     }
-    Serial.print("requesting URL: ");
-    Serial.println(host);
-
-    String getData, Link;
+    if (debug)
+    {
+        Serial.print("requesting URL: ");
+        Serial.println(host);
+    }
 
     //POST Data
     httpsClient.print(String("POST ") + pubLink + " HTTP/1.1\r\n" +
-                     "Host: " + host + "\r\n" +
-                     "Content-Type: application/x-www-form-urlencoded" + "\r\n" +
-                     "DeviceToken: " + guidsensor  + "\r\n" +
-                     "Content-Length: " + String(data.length()) + "\r\n\r\n" +
-                     data + "\r\n" +
-                     "Connection: close\r\n\r\n");
-    Serial.println("closing connection");
+                      "Host: " + host + "\r\n" +
+                      "Content-Type: application/x-www-form-urlencoded" + "\r\n" +
+                      "DeviceToken: " + guidsensor + "\r\n" +
+                      "Content-Length: " + String(g_dataBuff.length()) + "\r\n\r\n" +
+                      g_dataBuff + "\r\n" +
+                      "Connection: close\r\n\r\n");
+    if (debug)
+    {
+        Serial.println("closing connection");
+    }
+    g_dataBuff = "";
 }

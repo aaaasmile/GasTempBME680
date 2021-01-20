@@ -5,12 +5,13 @@ int LedRedpin = D5;
 int LedGreenpin = D6;
 int LedYellowpin = D7;
 
-MyLight::MyLight()
+MyLight::MyLight(bool debug)
 {
     this->_greenState = false;
     this->_yellowState = false;
     this->_redState = false;
     this->_stateOn = false;
+    this->_debug = debug;
 }
 
 void MyLight::Setup()
@@ -85,21 +86,30 @@ int MyLight::calculateIAQScore(float iaq)
         IAQ_text += "Good";
         res = 1;
     }
-    Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
+    if (this->_debug)
+    {
+        Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
+    }
 
     return res;
 }
 
 void MyLight::LightTheState()
 {
-    Serial.println("Show the current score " + String(this->_iaqScore));
+    if (this->_debug)
+    {
+        Serial.println("Show the current score " + String(this->_iaqScore));
+    }
     this->TurnOn();
     this->lightTheState();
 }
 
 void MyLight::UpdateLight(float iaq)
 {
-    Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
+    if (this->_debug)
+    {
+        Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
+    }
 
     int oldScore = this->_iaqScore;
     this->_iaqScore = this->calculateIAQScore(iaq);
@@ -109,7 +119,10 @@ void MyLight::UpdateLight(float iaq)
     }
     else
     {
-        Serial.println("Trigger a led change");
+        if (this->_debug)
+        {
+            Serial.println("Trigger a led change");
+        }
         this->TurnOn();
     }
     if (this->_loopSameVal > 10)
@@ -172,7 +185,10 @@ void MyLight::turnGreen(bool state)
     if (state)
     {
         digitalWrite(LedGreenpin, HIGH);
-        Serial.println("GREEN light to High");
+        if (this->_debug)
+        {
+            Serial.println("GREEN light to High");
+        }
     }
     else
     {
@@ -191,7 +207,10 @@ void MyLight::turnYellow(bool state)
     if (state)
     {
         digitalWrite(LedYellowpin, HIGH);
-        Serial.println("YELLOW light to High");
+        if (this->_debug)
+        {
+            Serial.println("YELLOW light to High");
+        }
     }
     else
     {
@@ -210,7 +229,10 @@ void MyLight::turnRed(bool state)
     if (state)
     {
         digitalWrite(LedRedpin, HIGH);
-        Serial.println("RED light to High");
+        if (this->_debug)
+        {
+            Serial.println("RED light to High");
+        }
     }
     else
     {
