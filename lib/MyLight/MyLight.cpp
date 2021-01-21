@@ -125,7 +125,7 @@ void MyLight::UpdateLight(float iaq)
         }
         this->TurnOn();
     }
-    if (this->_loopSameVal > 10)
+    if (this->_loopSameVal > 20)
     {
         this->TurnOff();
         return;

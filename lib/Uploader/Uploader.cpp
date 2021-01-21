@@ -58,6 +58,10 @@ void Uploader::Setup()
 String g_dataBuff;
 void Uploader::SendData(String dataLine, bool debug)
 {
+    if (dataLine == "")
+    {
+        return;
+    }
     if (g_dataBuff == "")
     {
         g_dataBuff = dataLine;

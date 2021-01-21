@@ -9,7 +9,7 @@ public:
     BoschMgr(bool useErpomState);
     void Setup();
     float Next(bool debug);
-    String GetData() { return this->_valSensors; }
+    String GetData();
 
 private:
     void loadState();

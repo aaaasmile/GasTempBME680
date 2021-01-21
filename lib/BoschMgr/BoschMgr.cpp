@@ -176,8 +176,10 @@ void BoschMgr::Setup()
     // IGSA
     // Qui c'è un override dove mancano i sensori CO2 virtuali
     // Di default non hanno il sample rate (vedi funzione void Bsec::beginCommon())
-    // Qui di segiuto vengono abilitati i sensori virtuali che si desiderano
-    // L'abilitazione avviene settando BSEC_SAMPLE_RATE_LP
+    // Qui di seguito vengono abilitati i sensori virtuali che si desiderano
+    // L'abilitazione avviene settando il sample rate come BSEC_SAMPLE_RATE_LP
+    // da uno stato di default BSEC_SAMPLE_RATE_DISABLED. La lista che segue non fa altro
+    // che settare i valori dei 9 sensori con il sample rate LP. Dei 14 valori possibili, ne setto 9.
     bsec_virtual_sensor_t sensorList[9] = {
         BSEC_OUTPUT_RAW_TEMPERATURE,
         BSEC_OUTPUT_RAW_PRESSURE,
@@ -231,4 +233,11 @@ float BoschMgr::Next(bool debug)
         this->checkIaqSensorStatus(debug);
     }
     return this->_iaq;
+}
+
+String BoschMgr::GetData()
+{
+    String res = this->_valSensors;
+    this->_valSensors = "";
+    return res;
 }

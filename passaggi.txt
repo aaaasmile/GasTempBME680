@@ -110,3 +110,9 @@ L'autentificazione avviene per mezzo di un token messo nell'header DeviceToken (
 Il sensore Bosch BME680 legge diversi parametri dell'aria e la libreria bme inclusa calcola a livello software
 la qualità e la quantità di CO2. Parametro indiretto dal valore VOC.
 La lettura del valore avviene ogni 3 secondi.
+Per la libreria ho usato boschsensortec incluso con platformio. La libreria 
+non è completamente open source, ma ha un parte binaria che ho messo nella dir external_lib.
+L'ho presa da D:\Arduino\PlatformIO\GasTempBME680\.pio\libdeps\nodemcuv2\BSEC Software Library
+In questa sotto directory ci sono anche degli esempi che ho usato per 
+implementare i files BoschMgr.cpp. Ho usato la versione 1.5.1474.
+

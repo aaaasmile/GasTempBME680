@@ -36,22 +36,19 @@ void setup()
 
 void loop()
 {
-  float iaq = boschMgr->Next(g_debug);
+  float iaq = boschMgr->Next(g_debug); // polling, should be below 3 sec. Data are povided every 3000ms
 
-  for (size_t i = 0; i < 6; i++)
+  int analogValue = analogRead(analogInPin);
+  if (analogValue > 700)
   {
-    delay(500);
-    int analogValue = analogRead(analogInPin);
-    if (analogValue > 700)
+    if (g_debug)
     {
-      if (g_debug)
-      {
-        Serial.println("Analog value " + String(analogValue) + " trigger display");
-      }
-      myLight->LightTheState();
+      Serial.println("Analog value " + String(analogValue) + " trigger display");
     }
+    myLight->LightTheState();
   }
 
   myLight->UpdateLight(iaq);
-  uploader->SendData(boschMgr->GetData(), g_debug);
+  uploader->SendData(boschMgr->GetData(), g_debug); // collect data only if the sensor was read. Upate to server after collecting 3k of data.
+  delay(100);
 }
