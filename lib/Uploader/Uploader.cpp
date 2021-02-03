@@ -99,8 +99,9 @@ void Uploader::SendData(String dataLine, bool debug)
     {
         if (debug)
         {
-            Serial.println("Connection failed");
+            Serial.println("Connection failed, discard this buffer and hope for the next send");
         }
+        g_dataBuff = "";
         return;
     }
     else
@@ -126,7 +127,7 @@ void Uploader::SendData(String dataLine, bool debug)
                       "Connection: close\r\n\r\n");
     if (debug)
     {
-        Serial.println("closing connection");
+        Serial.println("closing connection after data send. All is OK.");
     }
     g_dataBuff = "";
 }

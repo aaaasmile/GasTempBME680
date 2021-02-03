@@ -86,10 +86,10 @@ int MyLight::calculateIAQScore(float iaq)
         IAQ_text += "Good";
         res = 1;
     }
-    if (this->_debug)
-    {
-        Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
-    }
+    // if (this->_debug)
+    // {
+    //     Serial.println("IAQ Score = " + String(res) + ", " + IAQ_text);
+    // }
 
     return res;
 }
@@ -106,10 +106,10 @@ void MyLight::LightTheState()
 
 void MyLight::UpdateLight(float iaq)
 {
-    if (this->_debug)
-    {
-        Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
-    }
+    // if (this->_debug)
+    // {
+    //     Serial.printf("UpdateLight, IAQ %f - old %d - loop %d ", iaq, this->_iaqScore, this->_loopSameVal);
+    // }
 
     int oldScore = this->_iaqScore;
     this->_iaqScore = this->calculateIAQScore(iaq);

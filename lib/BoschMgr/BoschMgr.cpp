@@ -27,10 +27,10 @@ void BoschMgr::checkIaqSensorStatus(bool debug)
 {
     // this function is called between two sensor data
     String output;
-    if (debug)
-    {
-        Serial.println("Check status");
-    }
+    // if (debug)
+    // {
+    //     Serial.println("Check status");
+    // }
     if (iaqSensor.status != BSEC_OK)
     {
         if (iaqSensor.status < BSEC_OK)

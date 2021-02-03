@@ -12,7 +12,7 @@ BoschMgr *boschMgr;
 Uploader *uploader;
 
 const int analogInPin = A0;
-const bool g_debug = false;
+const bool g_debug = true;
 
 void setup()
 {
