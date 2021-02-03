@@ -30,6 +30,7 @@ void MyLight::TurnOn()
 void MyLight::TurnOff()
 {
     this->_loopSameVal = 0;
+    this->_on_error = false;
     if (this->_stateOn)
     {
         this->turnRed(false);
@@ -104,6 +105,17 @@ void MyLight::LightTheState()
     this->lightTheState();
 }
 
+void MyLight::LightConnectionError()
+{
+    if (this->_debug)
+    {
+        Serial.println("Turn on error signal");
+    }
+    this->TurnOn();
+    this->_on_error = true;
+    this->lightTheState();
+}
+
 void MyLight::UpdateLight(float iaq)
 {
     // if (this->_debug)
@@ -113,7 +125,7 @@ void MyLight::UpdateLight(float iaq)
 
     int oldScore = this->_iaqScore;
     this->_iaqScore = this->calculateIAQScore(iaq);
-    if (this->_iaqScore == oldScore)
+    if (this->_iaqScore == oldScore || this->_on_error)
     {
         this->_loopSameVal++;
     }
@@ -137,6 +149,14 @@ void MyLight::lightTheState()
 {
     if (!this->_stateOn)
     {
+        return;
+    }
+    if (this->_on_error)
+    {
+        // green
+        this->turnRed(true);
+        this->turnYellow(true);
+        this->turnGreen(true);
         return;
     }
     if (this->_iaqScore <= 2)

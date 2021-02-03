@@ -7,6 +7,7 @@ public:
     MyLight(bool debug);
     void Setup();
     void UpdateLight(float iaq);
+    void LightConnectionError();
     void TurnOn();
     void TurnOff();
     void CheckLeds();
@@ -27,6 +28,7 @@ private:
     int _iaqScore;
     int _loopSameVal;
     bool _debug;
+    bool _on_error;
 };
 
 #endif

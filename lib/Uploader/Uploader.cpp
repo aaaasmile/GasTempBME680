@@ -56,11 +56,11 @@ void Uploader::Setup()
 }
 
 String g_dataBuff;
-void Uploader::SendData(String dataLine, bool debug)
+bool  Uploader::SendData(String dataLine, bool debug)
 {
     if (dataLine == "")
     {
-        return;
+        return false;
     }
     if (g_dataBuff == "")
     {
@@ -72,7 +72,7 @@ void Uploader::SendData(String dataLine, bool debug)
     }
     if (g_dataBuff.length() < 3072) // approx 90sec
     {
-        return;
+        return false;
     }
 
     WiFiClientSecure httpsClient;
@@ -102,7 +102,7 @@ void Uploader::SendData(String dataLine, bool debug)
             Serial.println("Connection failed, discard this buffer and hope for the next send");
         }
         g_dataBuff = "";
-        return;
+        return true;
     }
     else
     {
@@ -130,4 +130,5 @@ void Uploader::SendData(String dataLine, bool debug)
         Serial.println("closing connection after data send. All is OK.");
     }
     g_dataBuff = "";
+    return false;
 }

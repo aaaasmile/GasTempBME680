@@ -49,6 +49,14 @@ void loop()
   }
 
   myLight->UpdateLight(iaq);
-  uploader->SendData(boschMgr->GetData(), g_debug); // collect data only if the sensor was read. Upate to server after collecting 3k of data.
-  delay(100);
+  bool connFailed = uploader->SendData(boschMgr->GetData(), g_debug); // collect data only if the sensor was read. Upate to server after collecting 3k of data.
+  if (connFailed)
+  {
+    Serial.println("Connection issue...");
+    myLight->LightConnectionError();
+  }
+  else
+  {
+    delay(100);
+  }
 }

@@ -8,7 +8,7 @@ class Uploader
 public:
     Uploader();
 
-    void SendData(String data, bool debug);
+    bool SendData(String data, bool debug);
     void Setup();
 private:
     /* data */

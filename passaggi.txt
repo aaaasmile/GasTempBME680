@@ -106,8 +106,9 @@ Il protocollo usato per comunicare è https. Il client ha memorizzato nel softwa
 del ceritficato del server. 
 L'autentificazione avviene per mezzo di un token messo nell'header DeviceToken (shared key).
 
-Nota che il certficato del server lets encrypt cambia ogni mese. Quando succede,
-ESP8266 non riesce più a collegarsi col server.
+Nota che il certficato del server Lets Encrypt cambia ogni mese. Quando succede,
+ESP8266 non riesce più a collegarsi col server. In questo caso mostra tutti e 3 i led accessi per qualche secondo.
+
 Il finger print attuale è:
 #define FINGERPRINTMYSRV "05 fe 37 67 85 fb 3a 2c d0 f6 c4 62 d2 41 74 a9 d6 6e 66 d0";
 
