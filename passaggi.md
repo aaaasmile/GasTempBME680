@@ -119,7 +119,7 @@ Come riferimento per partire si può usare:
 https://github.com/OPEnSLab-OSU/SSLClient/blob/master/TrustAnchors.md
 
 ### Database dei dati
-Vedi la repository https://github.com/aaaasmile/iot-invido
+Vedi la repository https://github.com/aaaasmile/iot-invido.
 
 ## Sensore BME680
 Il sensore Bosch BME680 legge diversi parametri dell'aria e la libreria bme inclusa calcola a livello software
