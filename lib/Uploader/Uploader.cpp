@@ -81,7 +81,8 @@ bool  Uploader::SendData(String dataLine, bool debug)
         Serial.printf("Using fingerprint '%s' and host %s\n", fingerprint, host);
     }
 
-    httpsClient.setFingerprint(fingerprint);
+    //httpsClient.setFingerprint(fingerprint);
+    httpsClient.setInsecure(); // should be setTrustAnchors() // Ref: https://github.com/OPEnSLab-OSU/SSLClient/blob/master/TrustAnchors.md
 
     httpsClient.setTimeout(7000);
     int r = 0; //retry counter
