@@ -3,17 +3,13 @@
 
 #include "WString.h"
 
-class Uploader
-{
-public:
-    Uploader();
+class Uploader {
+ public:
+  Uploader();
 
-    bool SendData(String data, bool debug);
-    void Setup();
-private:
-    /* data */
+  bool SendData(String data, bool debug);
+  void Setup();
 
 };
-
 
 #endif

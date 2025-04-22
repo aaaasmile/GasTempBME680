@@ -24,16 +24,7 @@ CTRL + ALT + b
 Per la console seriale
 CTRL + ALT + s
 
-## Upload sul target (firmware.bin)
-Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.
-Per l'installazione di python e del tool esptool.py in WLC vedi il progetto Hello2.
-Apri WLC e 
-cd /mnt/d/Arduino/PlatformIO/esptool
-Check se esptool funziona con:
-python esptool.py --port /dev/ttyS4  --baud 115200 flash_id
 
-L'update del target avviene con:
-python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 0x0 ../GasTempBME680/.pio/build/nodemcuv2/firmware.bin
 
 ## Controllare il risultato
 Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
@@ -130,6 +121,29 @@ non è completamente open source, ma ha un parte binaria che ho messo nella dir 
 L'ho presa da D:\Arduino\PlatformIO\GasTempBME680\.pio\libdeps\nodemcuv2\BSEC Software Library
 In questa sotto directory ci sono anche degli esempi che ho usato per 
 implementare i files BoschMgr.cpp. Ho usato la versione 1.5.1474.
+
+## Sviluppo con Visual Code
+Su un nuovo laptop uso il Profilo PlatformIo con le extension c++ e PlatformIO.
+Quando collego il dispositivo, la porta COM individuata dal Garäte-Manager
+non mi è comparsa in modo automatico. Bensì un CP210 USB to UART.
+Per avere la porta COM occorre avere il driver, che l'ho scaricato e installato da qui: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
+Per l'installazione ho usato il tasto destro del mouse sul file inf.
+Ora ho il dispositivo associato alla porta COM7, che in Visual Code si può cambiare.
+Per il build, l'upload e il serial monitor uso le icone in Visual Code posizionate 
+nella status bar.
+
+## Obsolete
+
+## Upload sul target (firmware.bin)
+Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.
+Per l'installazione di python e del tool esptool.py in WLC vedi il progetto Hello2.
+Apri WLC e 
+cd /mnt/d/Arduino/PlatformIO/esptool
+Check se esptool funziona con:
+python esptool.py --port /dev/ttyS4  --baud 115200 flash_id
+
+L'update del target avviene con:
+python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 0x0 ../GasTempBME680/.pio/build/nodemcuv2/firmware.bin
 
 
 
