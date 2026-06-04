@@ -1,62 +1,91 @@
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <Wire.h>
-#include <SPI.h>
+// #include <Arduino.h>
+// #include <ESP8266WiFi.h>
+// #include <Wire.h>
+// #include <SPI.h>
 
-#include <MyLight.h>
-#include <BoschMgr.h>
-#include <Uploader.h>
+// #include <MyLight.h>
+// #include <BoschMgr.h>
+// #include <Uploader.h>
 
-MyLight *myLight;
-BoschMgr *boschMgr;
-Uploader *uploader;
+// MyLight *myLight;
+// BoschMgr *boschMgr;
+// Uploader *uploader;
 
-const int analogInPin = A0;
-const bool g_debug = true;
+// const int analogInPin = A0;
+// const bool g_debug = true;
 
-void setup()
-{
-  myLight = new MyLight(g_debug);
-  myLight->Setup();
-  myLight->TurnOn();
+// void setup()
+// {
+//   myLight = new MyLight(g_debug);
+//   myLight->Setup();
+//   myLight->TurnOn();
 
-  boschMgr = new BoschMgr(false);
+//   boschMgr = new BoschMgr(false);
 
-  Serial.begin(115200);
-  while (!Serial)
-    ;
-  Serial.println(F("My BME680 test, version 0.1.2"));
+//   Serial.begin(115200);
+//   while (!Serial)
+//     ;
+//   Serial.println(F("My BME680 test, version 0.1.2"));
 
-  uploader->Setup();
-  boschMgr->Setup();
-  myLight->CheckLeds();
-  delay(500);
-  myLight->TurnOff();
+//   uploader->Setup();
+//   boschMgr->Setup();
+//   myLight->CheckLeds();
+//   delay(500);
+//   myLight->TurnOff();
+// }
+
+// void loop()
+// {
+//   float iaq = boschMgr->Next(g_debug); // polling, should be below 3 sec.
+//   Data are povided every 3000ms
+
+//   int analogValue = analogRead(analogInPin);
+//   if (analogValue > 700)
+//   {
+//     if (g_debug)
+//     {
+//       Serial.println("Analog value " + String(analogValue) + " trigger
+//       display");
+//     }
+//     myLight->LightTheState();
+//   }
+
+//   myLight->UpdateLight(iaq);
+//   bool connFailed = uploader->SendData(boschMgr->GetData(), g_debug); //
+//   collect data only if the sensor was read. Upate to server after collecting
+//   3k of data. if (connFailed)
+//   {
+//     Serial.println("Connection issue...");
+//     myLight->LightConnectionError();
+//   }
+//   else
+//   {
+//     delay(100);
+//   }
+// }
+#include <Adafruit_NeoPixel.h>
+
+#define LED_PIN 27
+#define NUMPIXELS 1
+
+Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+    pixels.begin();
+    pixels.clear();
+    pixels.show();
 }
 
-void loop()
-{
-  float iaq = boschMgr->Next(g_debug); // polling, should be below 3 sec. Data are povided every 3000ms
+void loop() {
+    pixels.setPixelColor(0, pixels.Color(255, 0, 0));
+    pixels.show();
+    delay(1000);
 
-  int analogValue = analogRead(analogInPin);
-  if (analogValue > 700)
-  {
-    if (g_debug)
-    {
-      Serial.println("Analog value " + String(analogValue) + " trigger display");
-    }
-    myLight->LightTheState();
-  }
+    pixels.setPixelColor(0, pixels.Color(0, 255, 0));
+    pixels.show();
+    delay(1000);
 
-  myLight->UpdateLight(iaq);
-  bool connFailed = uploader->SendData(boschMgr->GetData(), g_debug); // collect data only if the sensor was read. Upate to server after collecting 3k of data.
-  if (connFailed)
-  {
-    Serial.println("Connection issue...");
-    myLight->LightConnectionError();
-  }
-  else
-  {
-    delay(100);
-  }
+    pixels.setPixelColor(0, pixels.Color(0, 0, 255));
+    pixels.show();
+    delay(1000);
 }
