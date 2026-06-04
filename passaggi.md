@@ -1,15 +1,19 @@
-== GasTempBME680
+# GasTempBME680
 Dopo aver preparato la scheda con il sensore e aver provato con aurduino ide che l'esempio funzioni,
 voglio avere un progetto con platform io.
 In Visual Code creo un nuovo progetto usando la mia directory custom D:\Arduino\PlatformIO e mettendo
 la piattaforma nodemcu 1.0. 
 L'upload non mi funziona da VScode, ma devo usare WLC, che poi non è un problema (vedi sotto).
 
-== ArduinoIDE Setup
-Vedi il link https://www.mikrocontroller-elektronik.de/nodemcu-esp8266-tutorial-wlan-board-arduino-ide/
-(esp8266 json nel device manager)
+## esp32-c5
+Ho usato per diverso tempo il microcontroller esp8266. L'ho sostituito con un esp32-c5 per via che in 
+ufficio non abbiamo più la wlan 2.4ghz ma solo la 5ghz.
 
-== Librerie
+## ArduinoIDE Setup
+Vedi il link https://www.mikrocontroller-elektronik.de/nodemcu-esp8266-tutorial-wlan-board-arduino-ide/
+(esp32-c5 json nel device manager)
+
+## Librerie
 Il primo problema che ho con il codice preso di pari pari da arduino ide è che le librerie non 
 vengono riconosciute. Esse sono Adafruit Sensor e Adafruit BME680.
 Vanno installate con PlatformIO. Come?
@@ -24,7 +28,7 @@ CTRL + ALT + b
 Per la console seriale
 CTRL + ALT + s
 
-== Upload sul target (firmware.bin)
+## Upload sul target (firmware.bin)
 Attenzione: il monitor serial di VS code deve essere bloccato prima di fare l'upload.
 Per l'installazione di python e del tool esptool.py in WLC vedi il progetto Hello2.
 Apri WLC e 
@@ -35,10 +39,10 @@ python esptool.py --port /dev/ttyS4  --baud 115200 flash_id
 L'update del target avviene con:
 python esptool.py --port /dev/ttyS4  --baud 115200 write_flash --flash_mode dio 0x0 ../GasTempBME680/.pio/build/nodemcuv2/firmware.bin
 
-== Controllare il risultato
+## Controllare il risultato
 Basta aprire il serial monitor con il comando PlatformIO: Serial Monitor CTRL + ALT + s
 
-== Errori
+## Errori
 1) ld.exe section `.text1' will not fit in region `iram1_0_seg'
 Sembra che si vada out of ram
 Dal sito della libreria di bosch https://github.com/BoschSensortec/BSEC-Arduino-library al punto 4.
@@ -63,12 +67,12 @@ si trovano codificati nel file bsec_datatypes.h
 3) Problema con #include <ESP8266WiFi.h>
 Va messo in main.cpp e allora si può usare anche nella lib.
 
-== Serial Monitor in WLC
+## Serial Monitor in WLC
 Servono due comandi:
 stty 115200  -F /dev/ttyS4 raw -echo
 cat /dev/ttyS4
 
-== Schema
+## Schema de ESP32 C5
 
 
 
@@ -88,7 +92,7 @@ cat /dev/ttyS4
       |                  |                                         |             ESP8266       |
       |                  +---------------------------------------->+                           |
       +------------------+                                         |  D2                       |
-                                                                   |                        A0 | +----------------------------> Button
+                                                                   |                  Adc1-ch3 | +----------------------------> Button
                                                                    |                           |
                                                                    +---------------------------+
 
@@ -97,7 +101,7 @@ Il tasto per mostrare lo stato è collegato al pin A0 con una resistenza di 220O
 è collegato in diagonale e l'altro capo è 3.3V. Quando il tasto è premuto il valore di A0 va sale a 1024.
 Quando non è premuto il valore letto è < 10. Ho visto 1 e 7 nel log.  
 
-== Comunicazione col server
+## Comunicazione col server
 Ho impostato il software per comunicare col server dopo aver collezionato un certo numero di dati.
 Dati che vengono mandato come stringa. Campi separati da virgola e recod da \n. Esempio di un record:
 TS: 140255, TEMP-RAW: 21.41, PRES: 100174.00, HUMI-RAW: 47.32, GASO: 84509.00, IAQ: 25.00, IAQA: 0, TEMP: 21.35, HUMY: 47.46, CO2: 500.00, VOC: 0.50
@@ -112,7 +116,7 @@ ESP8266 non riesce più a collegarsi col server. In questo caso mostra tutti e 3
 Il finger print attuale è:
 #define FINGERPRINTMYSRV "05 fe 37 67 85 fb 3a 2c d0 f6 c4 62 d2 41 74 a9 d6 6e 66 d0";
 
-== Sensore BME680
+## Sensore BME680
 Il sensore Bosch BME680 legge diversi parametri dell'aria e la libreria bme inclusa calcola a livello software
 la qualità e la quantità di CO2. Parametro indiretto dal valore VOC.
 La lettura del valore avviene ogni 3 secondi.
